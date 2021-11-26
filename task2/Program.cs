@@ -78,16 +78,15 @@ namespace task2
                 .Replace("\n", " ")
                 .Trim()
                 .Split();
-
+            
             for (var xNumber = 1; xNumber <= k; xNumber++)
             {
                 var xNode = "x" + xNumber;
-                var startPos = int.Parse(nodes[xNumber - 1]);
-                var endPos = xNumber == k ? arraySize - 1 : int.Parse(nodes[xNumber]);
+                var startAndEndPositions = FindStartEndPositions(xNumber, k, nodes);
+                var startPos = startAndEndPositions.Item1;
+                var endPos = startAndEndPositions.Item2;
                 for (var pos = startPos; pos < endPos; pos++)
                 {
-                    if (nodes[pos] == "0")
-                        continue;
                     var yNode = "y" + nodes[pos];
                     var edge = new Edge(xNode, yNode, 1);
                     nodeToEdges[xNode].Add(edge);
@@ -107,7 +106,8 @@ namespace task2
             {
                 for (var i = 0; i < chain.Count - 1; i++)
                 {
-                    var edge = nodeToEdges[chain[i]].First(x => x.to == chain[i + 1] || x.@from == chain[i + 1]);
+                    var edge = nodeToEdges[chain[i]]
+                        .First(x => x.to == chain[i + 1] || x.@from == chain[i + 1]);
                     if (edge.@from == chain[i])
                     {
                         edge.currentStream = 1;
@@ -131,13 +131,10 @@ namespace task2
             while (queue.Count != 0)
             {
                 var current = queue.Dequeue();
-                foreach (var edge in nodeToEdges[current].Where(x => x.GetH(current) != 0))
+                foreach (var edge in nodeToEdges[current]
+                    .Where(edge => edge.GetH(current) != 0))
                 {
-                    var newNode = "";
-                    if (current == edge.@from)
-                        newNode = edge.to;
-                    else
-                        newNode = edge.@from;
+                    var newNode = current == edge.@from ? edge.to : edge.@from;
                     if (previous.ContainsKey(newNode))
                     {
                         continue;
@@ -172,7 +169,7 @@ namespace task2
                 var edge = nodeToEdges["x" + i].FirstOrDefault(x => x.currentStream != 0);
                 if (edge is not null)
                 {
-                    file.Write(edge.to);
+                    file.Write(edge.to.Substring(1));
                 }
                 else
                 {
@@ -187,6 +184,20 @@ namespace task2
 
             file.Flush();
             file.Close();
+        }
+
+        public static Tuple<int, int> FindStartEndPositions(int nodeNumber, int nodesCount, string[] nodes)
+        {
+            var startPosition = int.Parse(nodes[nodeNumber - 1]);
+            if (startPosition == 0)
+                return Tuple.Create(-1, -1);
+            for (var i = nodeNumber; i <= nodesCount; i++)
+            {
+                var endPosition = int.Parse(nodes[i]);
+                if (endPosition != 0)
+                    return Tuple.Create(startPosition - 1, endPosition - 1);
+            }
+            return Tuple.Create(-1, -1);
         }
     }
 }
