@@ -15,18 +15,13 @@ namespace task3
             this.Price = price;
             this.Direction = direction;
         }
-
-        public override string ToString()
-        {
-            return $"To {this.Direction} by {this.Price} money";
-        }
     }
     
     class Program
     {
         static void Main(string[] args)
         {
-            var input = new StreamReader("withoutExit.txt");
+            var input = new StreamReader("in.txt");
 
             var firstLine = input.ReadLine().Split();
             var totalRoomsCount = int.Parse(firstLine[0]);
