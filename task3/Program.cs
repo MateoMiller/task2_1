@@ -32,7 +32,6 @@ namespace task3
             var roomToDoors = ParseRoomToDoors(totalRoomsCount, totalDoorsCount, input);
 
             var escapePrice = GetEscapePrice(roomToDoors, initialRoom);
-            Console.WriteLine(escapePrice);
             WriteResult(initialMoney, escapePrice);
         }
 
